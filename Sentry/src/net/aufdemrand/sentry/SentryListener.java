@@ -15,9 +15,9 @@ import org.bukkit.util.Vector;
 
 public class SentryListener implements Listener {
     
-    public Sentry plugin;
+    private Sentry plugin;
     
-    public SentryListener(Sentry sentry) {
+    SentryListener(Sentry sentry) {
         plugin = sentry;
     }
     
@@ -28,7 +28,7 @@ public class SentryListener implements Listener {
         if (event.getEntity() == null) return;
         
         //dont mess with player death.
-        if (event.getEntity() instanceof Player && event.getEntity().hasMetadata("NPC") == false) return;
+        if (event.getEntity() instanceof Player && !event.getEntity().hasMetadata("NPC")) return;
         
         
         Entity killer = event.getEntity().getKiller();
@@ -45,7 +45,7 @@ public class SentryListener implements Listener {
         SentryInstance sentry = plugin.getSentry(killer);
         
         
-        if (sentry != null && sentry.KillsDropInventory == false) {
+        if (sentry != null && !sentry.KillsDropInventory) {
             event.getDrops().clear();
             event.setDroppedExp(0);
         }
@@ -94,18 +94,16 @@ public class SentryListener implements Listener {
             
             if (sentry != null && sentry.isPyromancer1()) {
                 
-                plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                            public void run() {
-                                
-                                for (BlockFace face : org.bukkit.block.BlockFace.values()) {
-                                    if (block.getRelative(face).getType() == org.bukkit.Material.FIRE)
-                                        block.getRelative(face).setType(org.bukkit.Material.AIR);
-                                }
-                                
-                                if (block.getType() == org.bukkit.Material.FIRE) block.setType(org.bukkit.Material.AIR);
-                                
-                            }
-                        }
+                plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                    
+                    for (BlockFace face : BlockFace.values()) {
+                        if (block.getRelative(face).getType() == org.bukkit.Material.FIRE)
+                            block.getRelative(face).setType(org.bukkit.Material.AIR);
+                    }
+                    
+                    if (block.getType() == org.bukkit.Material.FIRE) block.setType(org.bukkit.Material.AIR);
+                    
+                }
                 );
             }
         }
@@ -198,13 +196,13 @@ public class SentryListener implements Listener {
             event.setDamage((double) from.getStrength());
             
             //uncancel if not bodyguard.
-            if (from.guardTarget == null || plugin.BodyguardsObeyProtection == false) event.setCancelled(false);
+            if (from.guardTarget == null || !plugin.BodyguardsObeyProtection) event.setCancelled(false);
             
             //cancel if invulnerable non-sentry npc
             if (to == null) {
                 NPC n = CitizensAPI.getNPCRegistry().getNPC(entto);
                 if (n != null) {
-                    boolean derp = (Boolean) n.data().get(NPC.DEFAULT_PROTECTED_METADATA, true);
+                    boolean derp = n.data().get(NPC.DEFAULT_PROTECTED_METADATA, true);
                     event.setCancelled(derp);
                 }
             }
@@ -216,12 +214,12 @@ public class SentryListener implements Listener {
             if (entfrom == entto) event.setCancelled(true);
             
             //apply potion effects
-            if (from.potionEffects != null && event.isCancelled() == false) {
+            if (from.potionEffects != null && !event.isCancelled()) {
                 ((LivingEntity) entto).addPotionEffects(from.potionEffects);
             }
             
             if (from.isWarlock1()) {
-                if (event.isCancelled() == false) {
+                if (!event.isCancelled()) {
                     if (to == null)
                         event.setCancelled(true); //warlock 1 should not do direct damamge, except to other sentries which take no fall damage.
                     
@@ -277,7 +275,7 @@ public class SentryListener implements Listener {
         }
         
         //process this event on each sentry to check for respondable events.
-        if ((event.isCancelled() == false || ok) && entfrom != entto && event.getDamage() > 0) {
+        if ((!event.isCancelled() || ok) && entfrom != entto && event.getDamage() > 0) {
             for (NPC npc : CitizensAPI.getNPCRegistry()) {
                 SentryInstance inst = plugin.getSentry(npc);
                 
@@ -296,7 +294,7 @@ public class SentryListener implements Listener {
                     
                 }
                 
-                if (inst.hasTargetType(16) && inst.sentryStatus == net.aufdemrand.sentry.SentryInstance.Status.isLOOKING && entfrom instanceof Player && CitizensAPI.getNPCRegistry().isNPC(entfrom) == false) {
+                if (inst.hasTargetType(16) && inst.sentryStatus == net.aufdemrand.sentry.SentryInstance.Status.isLOOKING && entfrom instanceof Player && !CitizensAPI.getNPCRegistry().isNPC(entfrom)) {
                     //pv-something event.
                     if (npc.getEntity().getLocation().distance(entto.getLocation()) <= inst.sentryRange || npc.getEntity().getLocation().distance(entfrom.getLocation()) <= inst.sentryRange) {
                         // in range
@@ -305,8 +303,8 @@ public class SentryListener implements Listener {
                             if (inst.hasLOS(entfrom) || inst.hasLOS(entto)) {
                                 //have los
                                 if ((!(entto instanceof Player) && inst.containsTarget("event:pve")) ||
-                                        (entto instanceof Player && CitizensAPI.getNPCRegistry().isNPC(entto) == false && inst.containsTarget("event:pvp")) ||
-                                        (CitizensAPI.getNPCRegistry().isNPC(entto) == true && inst.containsTarget("event:pvnpc")) ||
+                                        (entto instanceof Player && !CitizensAPI.getNPCRegistry().isNPC(entto) && inst.containsTarget("event:pvp")) ||
+                                        (CitizensAPI.getNPCRegistry().isNPC(entto) && inst.containsTarget("event:pvnpc")) ||
                                         (to != null && inst.containsTarget("event:pvsentry"))) {
                                     //Valid event, attack
                                     if (!inst.isIgnored((LivingEntity) entfrom)) {
@@ -319,8 +317,6 @@ public class SentryListener implements Listener {
                 }
             }
         }
-        
-        return;
     }
     
     @EventHandler(ignoreCancelled = true)
@@ -348,13 +344,9 @@ public class SentryListener implements Listener {
                 
                 if (perp == null) return;
                 if (inst.isIgnored(perp)) return;
-                
-                plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                    //delay so the mount is gone.
-                    public void run() {
-                        inst.setTarget(perp, true);
-                    }
-                }, 2);
+    
+                //delay so the mount is gone.
+                plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> inst.setTarget(perp, true), 2);
                 
                 return;
             }

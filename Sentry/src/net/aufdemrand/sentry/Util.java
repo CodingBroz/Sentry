@@ -12,23 +12,22 @@ import org.bukkit.entity.*;
 import org.bukkit.util.Vector;
 import net.citizensnpcs.api.npc.NPC;
 
-public class Util {
+class Util {
     
-    public static Location getFireSource(LivingEntity from, LivingEntity to) {
+    static Location getFireSource(LivingEntity from, LivingEntity to) {
         
         Location loco = from.getEyeLocation();
         Vector norman = to.getEyeLocation().subtract(loco).toVector();
         norman = normalizeVector(norman);
         norman.multiply(.5);
-        Location loc = loco.add(norman);
-        return loc;
+        return loco.add(norman);
     }
     
-    public static Location leadLocation(Location loc, Vector victor, double t) {
+    static Location leadLocation(Location loc, Vector victor, double t) {
         return loc.clone().add(victor.clone().multiply(t));
     }
     
-    public static void removeMount(int npcid) {
+    static void removeMount(int npcid) {
         NPC vnpc = CitizensAPI.getNPCRegistry().getById(npcid);
         if (vnpc != null) {
             if (vnpc.getEntity() != null) {
@@ -38,16 +37,16 @@ public class Util {
         }
     }
     
-    public static boolean CanWarp(Entity player, NPC bodyguyard) {
+    static boolean CanWarp(Entity player) {
         
         if (player instanceof Player) {
             
-            if (((Player) player).hasPermission("sentry.bodyguard.*")) {
+            if (player.hasPermission("sentry.bodyguard.*")) {
                 //have * perm, which all players do by default.
                 
-                if (((Player) player).isPermissionSet("sentry.bodyguard." + player.getWorld().getName())) {
+                if (player.isPermissionSet("sentry.bodyguard." + player.getWorld().getName())) {
                     
-                    if (!((Player) player).hasPermission("sentry.bodyguard." + player.getWorld().getName())) {
+                    if (!player.hasPermission("sentry.bodyguard." + player.getWorld().getName())) {
                         //denied this world.
                         return false;
                     }
@@ -57,7 +56,7 @@ public class Util {
             }
             
             
-            if (((Player) player).hasPermission("sentry.bodyguard." + player.getWorld().getName())) {
+            if (player.hasPermission("sentry.bodyguard." + player.getWorld().getName())) {
                 //no * but specifically allowed this world.
                 return true;
             }
@@ -67,7 +66,7 @@ public class Util {
         return false;
     }
     
-    public static String getLocalItemName(int MatId) {
+    private static String getLocalItemName(int MatId) {
         if (MatId == 0) return "Hand";
         if (MatId < 256) {
             Block b = getMCBlock(MatId);
@@ -78,7 +77,7 @@ public class Util {
         }
     }
     
-    public static double hangtime(double launchAngle, double v, double elev, double g) {
+    static double hangtime(double launchAngle, double v, double elev, double g) {
         
         double a = v * Math.sin(launchAngle);
         double b = -2 * g * elev;
@@ -93,16 +92,16 @@ public class Util {
     
     
     //check for obfuscation change
-    public static Item getMCItem(int id) {
+    private static Item getMCItem(int id) {
         return Item.getById(id);
     }
     
     //check for obfuscation change
-    public static Block getMCBlock(int id) {
+    private static Block getMCBlock(int id) {
         return Block.getById(id);
     }
     
-    public static Double launchAngle(Location from, Location to, double v, double elev, double g) {
+    static Double launchAngle(Location from, Location to, double v, double elev, double g) {
         
         Vector victor = from.clone().subtract(to).toVector();
         Double dist = Math.sqrt(Math.pow(victor.getX(), 2) + Math.pow(victor.getZ(), 2));
@@ -126,17 +125,17 @@ public class Util {
         
     }
     
-    public static String format(String input, NPC npc, CommandSender player, int item, String amount) {
+    static String format(String input, NPC npc, CommandSender player, int item, String amount) {
         if (input == null) return null;
         input = input.replace("<NPC>", npc.getName());
         input = input.replace("<PLAYER>", player == null ? "" : player.getName());
         input = input.replace("<ITEM>", Util.getLocalItemName(item));
-        input = input.replace("<AMOUNT>", amount.toString());
+        input = input.replace("<AMOUNT>", amount);
         input = ChatColor.translateAlternateColorCodes('&', input);
         return input;
     }
     
-    public static Vector normalizeVector(Vector victor) {
+    static Vector normalizeVector(Vector victor) {
         double mag = Math.sqrt(Math.pow(victor.getX(), 2) + Math.pow(victor.getY(), 2) + Math.pow(victor.getZ(), 2));
         if (mag != 0) return victor.multiply(1 / mag);
         return victor.multiply(0);

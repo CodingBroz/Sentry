@@ -29,7 +29,7 @@ public class BodyguardTeleportStuckAction implements StuckAction {
                 return true;
         } else {
             //do nothing, next logic tick will clear the entity.
-            if (inst.guardEntity == null || !Util.CanWarp(inst.guardEntity, npc)) return true;
+            if (inst.guardEntity == null || !Util.CanWarp(inst.guardEntity)) return true;
         }
         
         

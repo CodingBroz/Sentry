@@ -1435,7 +1435,7 @@ public class SentryInstance {
                     Location npcLoc = getMyEntity().getLocation();
                     
                     if (guardEntity.getLocation().getWorld() != npcLoc.getWorld() || !isMyChunkLoaded()) {
-                        if (Util.CanWarp(guardEntity, myNPC)) {
+                        if (Util.CanWarp(guardEntity)) {
                             myNPC.despawn();
                             myNPC.spawn((guardEntity.getLocation().add(1, 0, 1)));
                         } else {
