@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="SimpleClans">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/Sentry/lib/SimpleClans.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

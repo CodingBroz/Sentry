@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="War">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/Sentry/lib/War.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

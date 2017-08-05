@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Towny">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/Sentry/lib/Towny.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

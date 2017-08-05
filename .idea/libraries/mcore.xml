@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="mcore">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/Sentry/lib/mcore.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
